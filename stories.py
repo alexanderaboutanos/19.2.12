@@ -1,5 +1,25 @@
 """Madlibs Stories."""
 
+from flask import Flask, request, render_template
+from flask_debugtoolbar import DebugToolbarExtension
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = "SECRETZ"
+
+debug = DebugToolbarExtension(app)
+
+@app.route('/')
+def homescreen():
+    prompts = story.prompts
+    return render_template('/home.html', prompts=prompts)
+
+@app.route('/story')
+def create_story():
+    ans = {}
+    for prompt in story.prompts:
+        ans[f"{prompt}"] = request.args[f"{prompt}"]
+    final_story = story.generate(ans)
+    return render_template('/story.html', final_story=final_story)
 
 class Story:
     """Madlibs story.
@@ -40,6 +60,5 @@ class Story:
 
 story = Story(
     ["place", "noun", "verb", "adjective", "plural_noun"],
-    """Once upon a time in a long-ago {place}, there lived a
-       large {adjective} {noun}. It loved to {verb} {plural_noun}."""
+    """Once upon a time in a long-ago {place}, there lived a large {adjective} {noun}. It loved to {verb} {plural_noun}."""
 )
